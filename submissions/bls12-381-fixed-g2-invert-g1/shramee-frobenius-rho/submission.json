@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "title": "bls12-381-fixed-g2-invert-g1: Frobenius-class rho with a cyclotomic-squaring branch read from a trace invariant",
+  "claims": [
+    {
+      "statement": "For uniform nonidentity Q in G2 and uniform z in GT, the algorithm in proof.md (compute g=e(P0,Q); solve z=g^x by parallel distinguished-point Pollard rho on the 12-element Frobenius classes of GT with R=1024 twisted multipliers, a 4-Fp-multiplication canonical-conjugate key, a Granger-Scott cyclotomic-squaring branch taken with probability 3/8 (branch, multiplier and distinguished-point bits read from the free class invariant T=Re(c_0), so squaring steps need no key computation; the 12 keys are computed on multiply steps and at distinguished points only), deterministic fruitless-cycle escapes, and hard caps on steps, reports, restarts, false-fingerprint verifications and a metered total-work abort at 2^125.74 (so the work bound holds on every run); output P=[x]P0 and verify e(P,Q)=z) succeeds with probability at least 0.39 using at most 2^125.74 total dense-Fp12-multiplication equivalents (C=20,000), including setup, pairings, table construction, walk starts, distinguished-point handling, cycle handling, detection delay, output and verification. The table multiply is the reference operation (1 unit); the squaring branch is priced at 11,400 scalar instructions (0.57 unit), every step carries 300 instructions of bookkeeping and multiply steps a further 2,200 instructions for the keys. Peak memory is below 2^73 bytes; preprocessing is at most 2^31 units and is included; nonuniform advice is 0 bytes. The success bound relies on the standard random-mapping heuristic for rho walks, adjusted for the branch mix (effective class count N/(1-s^2-(1-s)^2/R)), with model success 0.43 against the required 0.39, supported by toy-field experiments and by running the production step rule in the real BLS12-381 GT; the firing of the abort and of the caps is covered by the heuristic H1+ (no percentage-point drift of the branch, cycle and report statistics over the run) with a budget of 0.01 of success probability; no production-size run is claimed.",
+      "score": {
+        "numerator": "12574",
+        "denominator": "100"
+      },
+      "evidence": [
+        "proof.md",
+        "experiment.py"
+      ]
+    }
+  ],
+  "experiments": [
+    {
+      "id": "frobenius-rho-trace-branch-checks",
+      "source": "experiment.py",
+      "purpose": "Part A: on real BLS12-381 GT elements check that Re(c_0) is the same for all 12 conjugates, the Frobenius formula, the 4-multiplication conjugate-key formula, distinctness of the 12 keys, the canonical representative, the Granger-Scott squaring formula with its operation counts (9 Fp2 squarings, 34 Fp2 additions), the factorisation of r-1 and the orders of p and 2 modulo r. Part C: execute the production step rule (branch, multiplier and distinguished bits read from Re(c_0), keys only on multiply steps, twisted table, squaring, 2-cycle escape) in the real GT for thousands of steps and compare against explicit Frobenius arithmetic. Part B: run the complete algorithm (cycle escapes, distinguished points, collision solving) in a small field with the same tower shape and compare first-collision times with the random-mapping law adjusted for the branch mix. Part E: sample classes, apply one step and count image coincidences to test the pair-collision law of the branch mix. Part D: recompute the work ledger and the slack of the work cap. Part B also reports the run-to-run fluctuation of the mean charge against the independent-steps prediction. Toy scale only; does not validate production costs.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "integer",
+            "enum": [
+              67,
+              139,
+              163,
+              211,
+              379
+            ]
+          },
+          "trials": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2000
+          },
+          "R": {
+            "type": "integer",
+            "minimum": 4,
+            "maximum": 1024
+          },
+          "sq8": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7
+          },
+          "dp_bits": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8
+          },
+          "walks": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 32
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "production_checks": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+          },
+          "production_steps": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6000
+          },
+          "seconds": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 14
+          },
+          "dump": {
+            "type": "boolean"
+          },
+          "pair_samples": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30000
+          }
+        },
+        "required": [
+          "q",
+          "trials",
+          "R",
+          "sq8",
+          "dp_bits",
+          "walks",
+          "seed"
+        ],
+        "additionalProperties": false
+      },
+      "initial_inputs": [
+        {
+          "q": 67,
+          "trials": 40,
+          "R": 64,
+          "sq8": 3,
+          "dp_bits": 3,
+          "walks": 4,
+          "seed": 1,
+          "production_checks": 2,
+          "production_steps": 2000,
+          "seconds": 6,
+          "pair_samples": 4000
+        }
+      ]
+    }
+  ]
+}

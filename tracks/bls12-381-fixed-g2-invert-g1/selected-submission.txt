@@ -1,1 +1,1 @@
-submissions/bls12-381-fixed-g2-invert-g1
+submissions/bls12-381-fixed-g2-invert-g1/shramee-frobenius-rho
